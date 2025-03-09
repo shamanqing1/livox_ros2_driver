@@ -38,6 +38,13 @@
 #include "lds_lidar.h"
 #include "lds_lvx.h"
 
+// time_stamp ;
+struct time_stamp {
+  int64_t high;
+  int64_t low;
+};
+extern struct time_stamp *pointt;
+
 namespace livox_ros {
 
 /** Lidar Data Distribute Control--------------------------------------------*/
@@ -408,6 +415,7 @@ uint32_t Lddc::PublishCustomPointcloud(LidarDataQueue *queue,
     if (!published_packet) {
       livox_msg.timebase = timestamp;
       packet_offset_time = 0;
+      pointt->low = timestamp;
       /** convert to ros time stamp */
       livox_msg.header.stamp = rclcpp::Time(timestamp);
     } else {

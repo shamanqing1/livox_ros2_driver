@@ -45,6 +45,18 @@
 #include "livox_interfaces/msg/custom_point.h"
 #include "livox_interfaces/msg/custom_msg.h"
 
+#define ERR_EXIT(m)                                                            \
+  do {                                                                         \
+    perror(m);                                                                 \
+    exit(EXIT_FAILURE);                                                        \
+  } while (0)
+
+struct time_stamp {
+  int64_t high;
+  int64_t low;
+};
+struct time_stamp *pointt;
+
 namespace
 {
   const int32_t kSdkVersionMajorLimit = 2;
@@ -101,6 +113,20 @@ LivoxDriver::LivoxDriver(const rclcpp::NodeOptions & node_options)
   this->get_parameter("publish_freq", publish_freq);
   this->get_parameter("output_data_type", output_type);
   this->get_parameter("frame_id", frame_id);
+
+  const char *user_name = getlogin();
+  std::string path_for_time_stamp = "/home/" + std::string(user_name) + "/timeshare";
+  const char *shared_file_name = path_for_time_stamp.c_str();
+  int fd = open(shared_file_name, O_CREAT | O_RDWR | O_TRUNC, 0666);
+  if (fd == -1) {
+    ERR_EXIT("open");
+  } else {
+    printf("open code: %d\n", fd);
+  }
+  lseek(fd, sizeof(time_stamp) * 1, SEEK_SET);
+  write(fd, "", 1);
+  pointt = (time_stamp *)mmap(NULL, sizeof(time_stamp) * 1,
+                              PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if (publish_freq > 100.0) {
     publish_freq = 100.0;
   } else if (publish_freq < 0.1) {
@@ -196,6 +222,7 @@ LivoxDriver::~LivoxDriver()
 {
   exit_signal_.set_value();
   poll_thread_->join();
+  munmap(pointt, sizeof(time_stamp) * 5);
 }
 
 void LivoxDriver::pollThread()

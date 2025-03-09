@@ -29,6 +29,7 @@
 #include <string.h>
 #include <time.h>
 #include <chrono>
+#include <iostream>
 
 namespace livox_ros {
 
@@ -685,7 +686,7 @@ void Lds::StorageRawPacket(uint8_t handle, LivoxEthPacket* eth_packet) {
     if (eth_packet->timestamp_type == kTimestampTypePps) {
       /** Whether a new sync frame */
       if ((cur_timestamp.stamp < packet_statistic->last_imu_timestamp) &&
-          (cur_timestamp.stamp < kPacketTimeGap)) {
+          (cur_timestamp.stamp < kPacketTimeGap * 10)) {
         auto cur_time = std::chrono::high_resolution_clock::now();
         int64_t sync_time = cur_time.time_since_epoch().count();
         /** used receive time as timebase */

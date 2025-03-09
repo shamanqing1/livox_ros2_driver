@@ -1,27 +1,18 @@
 {
     "lidar_config": [
         {
-            "broadcast_code": "0T9DFBC00401611",
+            "broadcast_code": "3JEDK2S00122481",
             "enable_connect": false,
             "enable_fan": true,
             "return_mode": 0,
             "coordinate": 0,
-            "imu_rate": 1,
-            "extrinsic_parameter_source": 0
-        },
-        {
-            "broadcast_code": "0TFDG3U99101431",
-            "enable_connect": false,
-            "enable_fan": true,
-            "return_mode": 0,
-            "coordinate": 0,
-            "imu_rate": 1,
+            "imu_rate": 0,
             "extrinsic_parameter_source": 0
         }
     ],
 	
     "timesync_config": {
-        "enable_timesync": false,
+        "enable_timesync": true,
         "device_name": "/dev/ttyUSB0",
         "comm_device_type": 0,
         "baudrate_index": 2,
